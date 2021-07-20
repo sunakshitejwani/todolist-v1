@@ -10,11 +10,12 @@ app.get("/",function(req,res){
     if(currentDay === 6 || currentDay === 0)  {
         res.write("<h1>Yay it is weekend!</h1>");
     } else {
-        res.write("<p>It is not the weekend</p>");
+        // res.write("<p>It is not the weekend</p>");
 
-        res.write("<h1>Boo! I have to work!</h1>");
+        // res.write("<h1>Boo! I have to work!</h1>");
+        res.sendFile(__dirname + "/index.html");
     }
-    res.send();
+    //res.send();
 });
 
 app.listen(3000,function(){
