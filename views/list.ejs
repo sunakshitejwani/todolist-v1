@@ -6,10 +6,11 @@
   <body>
         <h1 style="color: blue"> <%= kindofDay %> ToDo List</h1>
         <ul>
-            <li>Learn Ejs</li>
-            <li>Learn Algorithms</li>
-            <li>DO Yoga</li>
-            <li><%= newListItem %></li>
+            <%for(var i = 0 ; i<newListItems.length;i++){%>
+                <li>
+                    <%=newListItems[i]%>
+                </li>
+           <% }%>
 
         </ul>
         <form class="" action="/" method="post">
