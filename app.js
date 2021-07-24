@@ -8,24 +8,26 @@ var workItems = [];
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost:27017/todoListDB",{useNewUrlParser:true});
+mongoose.connect("mongodb://localhost:27017/todoListDB", {
+  useNewUrlParser: true
+});
 
 const itemsSchema = {
   name: String
 };
 
-const Item = mongoose.model("Item",itemsSchema);
+const Item = mongoose.model("Item", itemsSchema);
 
 const item1 = new Item({
-  name:"Welcome to your to-list"
+  name: "Welcome to your to-list"
 });
 
 const item2 = new Item({
-  name:"Hit the + button to add a new item"
+  name: "Hit the + button to add a new item"
 });
 
 const item3 = new Item({
-  name:"<-- Hit this to delete an item."
+  name: "<-- Hit this to delete an item."
 });
 
 const defaultItems = [item1, item2, item3];
@@ -41,7 +43,19 @@ const defaultItems = [item1, item2, item3];
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", function(req, res) {
-  res.render("list", { listTitle: "Today", newListItems: items });
+  Item.find({}, function(error, foundItems) {
+    if (foundItems.length === 0) {
+      Item.insertMany(defaultItems, function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Successfully saved default items to DB");
+        }
+      });
+      res.redirect("/");
+    }
+    res.render("list", { listTitle: "Today", newListItems: foundItems });
+  });
 });
 
 app.post("/", function(req, res) {
@@ -67,9 +81,9 @@ app.post("/work", function(req, res) {
   res.redirect("/work");
 });
 
-app.get("/about",function(req,res){
-    res.render("about");
-})
+app.get("/about", function(req, res) {
+  res.render("about");
+});
 
 app.listen(3000, function() {
   console.log("server is running on port 3000");
