@@ -2,16 +2,18 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const _ = require("lodash");
+const password = require(__dirname + "/creds");
 const app = express();
-var items = [];
-var workItems = [];
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost:27017/todoListDB", {
-  useNewUrlParser: true
-});
+mongoose.connect(
+  `mongodb+srv://admin-ranger:${password}@cluster0.xwiw7.mongodb.net/todoListDB`,
+  {
+    useNewUrlParser: true
+  }
+);
 
 const itemsSchema = {
   name: String
@@ -67,13 +69,15 @@ app.post("/", function(req, res) {
   });
 
   if (listName === "Today") {
-    item.save();
-    res.redirect("/");
+    item.save(function(err) {
+      res.redirect("/");
+    });
   } else {
     List.findOne({ name: listName }, function(err, foundList) {
       foundList.items.push(item);
-      foundList.save();
-      res.redirect("/" + listName);
+      foundList.save(function(err) {
+        res.redirect("/" + listName);
+      });
     });
   }
 });
@@ -109,15 +113,16 @@ app.get("/:customListName", function(req, res) {
 
   List.findOne({ name: customListName }, function(err, foundList) {
     if (!err) {
-      if (!foundList) {
+      if (!foundList && foundList !== customListName) {
         //create new list
         const list = new List({
           name: customListName,
           items: defaultItems
         });
 
-        list.save();
-        res.redirect("/" + customListName);
+        list.save(function(err) {
+          res.redirect("/" + customListName);
+        });
       } else {
         res.render("list", {
           listTitle: foundList.name,
