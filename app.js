@@ -39,14 +39,6 @@ const listSchema = {
 
 const List = mongoose.model("List", listSchema);
 
-// Item.insertMany(defaultItems,function(err){
-//   if(err){
-//     console.log(err);
-//   } else{
-//     console.log("Successfully saved default items to DB");
-//   }
-// })
-
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", function(req, res) {
@@ -67,13 +59,22 @@ app.get("/", function(req, res) {
 
 app.post("/", function(req, res) {
   const itemName = req.body.newItem;
+  const listName = req.body.list;
 
   const item = new Item({
     name: itemName
   });
 
-  item.save();
-  res.redirect("/");
+  if (listName === "Today") {
+    item.save();
+    res.redirect("/");
+  } else {
+    List.findOne({ name: listName }, function(err, foundList) {
+      foundList.items.push(item);
+      foundList.save();
+      res.redirect("/" + listName);
+    });
+  }
 });
 
 app.post("/delete", function(req, res) {
@@ -95,16 +96,14 @@ app.get("/:customListName", function(req, res) {
     if (!err) {
       if (!foundList) {
         //create new list
-        console.log("doesn't exist");
         const list = new List({
           name: customListName,
           items: defaultItems
         });
 
         list.save();
-        res.redirect("/"+customListName);
+        res.redirect("/" + customListName);
       } else {
-        console.log("exists");
         res.render("list", {
           listTitle: foundList.name,
           newListItems: foundList.items
@@ -113,16 +112,6 @@ app.get("/:customListName", function(req, res) {
     }
   });
 });
-
-// app.get("/work", function(req, res) {
-//   res.render("list", { listTitle: "Work List", newListItems: workItems });
-// });
-
-// app.post("/work", function(req, res) {
-//   let item = req.body.newItem;
-//   workItems.push(item);
-//   res.redirect("/work");
-// });
 
 app.get("/about", function(req, res) {
   res.render("about");
