@@ -2,14 +2,14 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const _ = require("lodash");
-//const password = require(__dirname + "/creds");
+const password = require(__dirname + "/creds");
 const app = express();
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
 mongoose.connect(
-  `mongodb+srv://admin-ranger:ranger123@cluster0.xwiw7.mongodb.net/todoListDB`,
+  `mongodb+srv://admin-ranger:${password}@cluster0.xwiw7.mongodb.net/todoListDB`,
   {
     useNewUrlParser: true
   }
