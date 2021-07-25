@@ -11,7 +11,8 @@ app.use(express.static("public"));
 mongoose.connect(
   `mongodb+srv://admin-ranger:${password}@cluster0.xwiw7.mongodb.net/todoListDB`,
   {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useFindAndModify: false
   }
 );
 
